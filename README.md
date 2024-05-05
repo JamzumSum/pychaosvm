@@ -4,13 +4,24 @@ A Python envirionment for Tencent ChaosVM.
 
 ## Usage
 
+To get ``
+
 ```python
 from chaosvm import prepare
 from urllib.parse import unquote
 
-tdc = prepare(vmjs)                         # see docstring for more info
+tdc = prepare(vmjs, "114.5.1.4")            # see docstring for more info
 print( tdc.getInfo().__dict__ )             # a python dict
 print( unquote(tdc.getData(None, True)) )   # a python str
+```
+
+To get `TDC_itoken`:
+
+```python
+# retrun the window object, instead of its TDC field
+win = prepare(vmjs, "114.5.1.4", return_window=True)
+tdc = win.TDC                               # the way to get TDC object
+print( win.TDC_itoken )                     # 114514514:1919810810
 ```
 
 ## Install
