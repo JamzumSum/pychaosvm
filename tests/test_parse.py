@@ -34,9 +34,20 @@ def test_execute(vmjs: str):
     assert len(collect) > 4
     assert "chaosvm" not in collect
 
-    tdc = prepare(vmjs, "", mouse_track=[(50, 42), (50, 55)])
+    tdc = prepare(vmjs, "", mouse_track=[(50, 42), (50, 55)], return_window=True).TDC
     collect = tdc.getData(None, True)
     collect = unquote(collect)
     assert isinstance(collect, str)
     assert len(collect) > 4
     assert "chaosvm" not in collect
+
+
+def test_tdc_token(vmjs: str):
+    from chaosvm import prepare
+
+    win = prepare(vmjs, "", return_window=True)
+    assert win.TDC_itoken
+    token1 = win.TDC_itoken
+
+    win = prepare(vmjs, "", TDC_itoken=token1, return_window=True)
+    assert win.TDC_itoken == token1

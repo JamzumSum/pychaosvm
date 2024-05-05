@@ -297,3 +297,15 @@ class Window(Proxy, EventTarget):
         if isinstance(encodedURI, String):
             encodedURI = encodedURI._s
         return unquote(encodedURI)
+
+    @property
+    def TDC_itoken(self) -> Optional[str]:
+        return self.localStorage.getItem("TDC_itoken") or self.sessionStorage.getItem("TDC_itoken")
+
+    @TDC_itoken.setter
+    def TDC_itoken(self, v: str):
+        self.localStorage.setItem("TDC_itoken", v)
+        self.sessionStorage.setItem("TDC_itoken", v)
+        self.document.cookie = (
+            f"TDC_itoken={quote(v)}; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/"
+        )

@@ -10,9 +10,11 @@ def _syntax_hash(node: dict, context: defaultdict, d=";"):
         ],
         Identifier=lambda: context[c] if len(c := node["name"]) == 1 else c,
         VariableDeclaration=lambda: f"{node['kind']} {syntax_hash(node['declarations'], context, ',')}",
-        VariableDeclarator=lambda: f"{syntax_hash(node['id'], context)}={syntax_hash(node['init'], context)}"
-        if node["init"]
-        else syntax_hash(node["id"], context),
+        VariableDeclarator=lambda: (
+            f"{syntax_hash(node['id'], context)}={syntax_hash(node['init'], context)}"
+            if node["init"]
+            else syntax_hash(node["id"], context)
+        ),
         AssignmentExpression=lambda: f"{syntax_hash(node['left'], context)}"
         f"{node['operator']}{syntax_hash(node['right'], context)}",
         UnaryExpression=lambda: f"{node['operator']}{syntax_hash(node['argument'], context)}",

@@ -61,12 +61,10 @@ class BuiltinOps:
         self.__req_idx = self.ops.index(self.refeq)
 
     @overload
-    def _curcode(self) -> int:
-        ...
+    def _curcode(self) -> int: ...
 
     @overload
-    def _curcode(self, n: int) -> Tuple[int, ...]:
-        ...
+    def _curcode(self, n: int) -> Tuple[int, ...]: ...
 
     def _curcode(self, n=1):
         if n == 1:
