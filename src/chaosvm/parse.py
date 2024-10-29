@@ -72,7 +72,8 @@ def parse_opcode_mapping(vm_declare: dict) -> Dict[int, int]:
     declares = [
         i
         for d in dcl_content
-        if d["type"] == "VariableDeclaration" and (i := path_get(d, "declarations", 0, "init"))
+        if (d["type"] == "VariableDeclaration" and (i := path_get(d, "declarations", 0, "init")))
+        or (d["type"] == "ForStatement" and (i := path_get(d, "init", "declarations", 0, "init")))
     ]
     op_def_list = first(lambda i: i["type"] == "ArrayExpression", declares)["elements"]
 
