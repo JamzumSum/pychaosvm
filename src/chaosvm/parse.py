@@ -1,7 +1,7 @@
 from base64 import b64decode
 from collections import defaultdict
 from hashlib import md5
-from typing import Any, Callable, Dict, Iterable, List, Union
+from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
 from urllib.parse import unquote
 
 import pyjsparser as jsparser
@@ -15,6 +15,17 @@ from chaosvm.vm import OP_FEATS
 def path_get(d: Union[dict, list], *path: Union[str, int]) -> Any:
     o = d
     for i in path:
+        o = o[i]  # type: ignore
+    return o
+
+
+def path_get_default(d: Union[dict, list], *path: Union[str, int], default=None) -> Any:
+    o = d
+    for i in path:
+        if (isinstance(o, dict) and i not in o) or (
+            isinstance(o, list) and i >= len(o)  # type: ignore
+        ):
+            return default
         o = o[i]  # type: ignore
     return o
 
@@ -64,16 +75,35 @@ def parse_vm(vm_js: str, window: Window):
     return stack
 
 
+declare_parsers = [
+    lambda dcl_content: [
+        i
+        for d in dcl_content
+        if d["type"] == "VariableDeclaration"
+        and (i := path_get_default(d, "declarations", 0, "init"))
+    ],
+    lambda dcl_content: [
+        i
+        for d in dcl_content
+        if d["type"] == "ForStatement"
+        and (i := path_get_default(d, "init", "declarations", 0, "init"))
+    ],
+]
+
+
+def try_get_declare_contents(vm_declare: dict) -> Tuple[int, List[dict]]:
+    for ver, f in enumerate(declare_parsers):
+        if dcl := f(vm_declare):
+            return ver, dcl
+    raise NotImplementedError("This version is not tested...")
+
+
 def parse_opcode_mapping(vm_declare: dict) -> Dict[int, int]:
     """Parse operation-code mapping."""
     params = vm_declare["params"]
     G = {i["name"]: k for i, k in zip(params, ["p", "P", "window", "S"])}
-    dcl_content = path_get(vm_declare, "body", "body")
-    declares = [
-        i
-        for d in dcl_content
-        if d["type"] == "VariableDeclaration" and (i := path_get(d, "declarations", 0, "init"))
-    ]
+
+    version, declares = try_get_declare_contents(path_get(vm_declare, "body", "body"))
     op_def_list = first(lambda i: i["type"] == "ArrayExpression", declares)["elements"]
 
     d: Dict[int, int] = {}

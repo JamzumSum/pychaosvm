@@ -5,9 +5,15 @@ from urllib.request import urlopen as get
 from pytest import fixture
 
 
-@fixture(scope="module")
-def vmjs() -> str:
-    with get("https://t.captcha.qq.com/tdc.js?app_data=7124050803564679168&t=636313065") as r:
+@fixture(
+    scope="module",
+    params=[
+        "https://t.captcha.qq.com/tdc.js?app_data=7124050803564679168&t=636313065",
+        "https://turing.captcha.qcloud.com/tdc.js?app_data=7256590633187913728",
+    ],
+)
+def vmjs(request) -> str:
+    with get(request.param) as r:
         return decompress(r.read()).decode()
 
 
