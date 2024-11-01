@@ -4,17 +4,25 @@ from typing import Union
 
 
 def _syntax_hash(node: dict, context: defaultdict, d=";"):
+    def _variable_declarator() -> str:
+        id_hash = syntax_hash(node["id"], context)
+        if node["init"]:
+            if node["init"]["type"] == "SequenceExpression":
+                return (
+                    syntax_hash(node["init"]["expressions"][:-1], context)
+                    + d
+                    + f"{id_hash}={syntax_hash(node['init']['expressions'][-1], context)}"
+                )
+            return f"{id_hash}={syntax_hash(node['init'], context)}"
+        return ""
+
     cases = dict(
         Literal=lambda: defaultdict(lambda: repr(literal_eval(c)), dict(null="null"))[
             (c := node["raw"])
         ],
         Identifier=lambda: context[c] if len(c := node["name"]) == 1 else c,
-        VariableDeclaration=lambda: f"{node['kind']} {syntax_hash(node['declarations'], context, ',')}",
-        VariableDeclarator=lambda: (
-            f"{syntax_hash(node['id'], context)}={syntax_hash(node['init'], context)}"
-            if node["init"]
-            else syntax_hash(node["id"], context)
-        ),
+        VariableDeclaration=lambda: f"{syntax_hash(node['declarations'], context)}",
+        VariableDeclarator=_variable_declarator,
         AssignmentExpression=lambda: f"{syntax_hash(node['left'], context)}"
         f"{node['operator']}{syntax_hash(node['right'], context)}",
         UnaryExpression=lambda: f"{node['operator']}{syntax_hash(node['argument'], context)}",
@@ -27,7 +35,7 @@ def _syntax_hash(node: dict, context: defaultdict, d=";"):
         MemberExpression=lambda: f"{syntax_hash(node['object'], context)}"
         f"[{syntax_hash(node['property'], context)}]",
         ExpressionStatement=lambda: syntax_hash(node["expression"], context),
-        SequenceExpression=lambda: syntax_hash(node["expressions"], context, ","),
+        SequenceExpression=lambda: syntax_hash(node["expressions"], context),
         ForStatement=lambda: "for",
         ForInStatement=lambda: "for in",
         ConditionalExpression=lambda: f"{syntax_hash(node['test'], context)}?"
