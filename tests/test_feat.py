@@ -5,7 +5,7 @@ from pyjsparser import parse
 from chaosvm.stxhash import syntax_hash
 
 
-def test_tuple():
+def test_new_attr():
     G1 = dict(C="p", y="P", Q="window", H="S")
     G2 = dict(k="p", B="P", Q="window", Y="S")
     s1 = """

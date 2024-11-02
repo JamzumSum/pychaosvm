@@ -4,8 +4,6 @@ A Python envirionment for Tencent ChaosVM.
 
 ## Usage
 
-To get ``
-
 ```python
 from chaosvm import prepare
 from urllib.parse import unquote
