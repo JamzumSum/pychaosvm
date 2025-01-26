@@ -61,7 +61,7 @@ class Proxy:
         for k, v in kw.items():
             self[k] = v
 
-    def __getattribute__(self, name: Union[str, float]):
+    def __getattribute__(self, name: Union[str, float], /):
         if isinstance(name, (int, float)):
             name = str(name)
         if name is Symbol.iterator:
@@ -72,7 +72,7 @@ class Proxy:
             log.debug("%s.%s not defined", self.__class__.__name__, name)
             return None
 
-    def __setattr__(self, name: Union[str, float], __value) -> None:
+    def __setattr__(self, name: Union[str, float], __value, /) -> None:
         if isinstance(name, (int, float)):
             name = str(name)
         return super().__setattr__(name, __value)
@@ -85,7 +85,7 @@ class Proxy:
     def __class_getitem__(cls, __name: str):
         return getattr(cls, __name)
 
-    def __delattr__(self, name: Union[str, float]) -> None:
+    def __delattr__(self, name: Union[str, float]) -> Any:
         if isinstance(name, (int, float)):
             name = str(name)
         return super().__delattr__(name)
@@ -194,7 +194,7 @@ class Symbol(Proxy):
     def __init__(self, tag: Optional[str] = None) -> None:
         super().__init__(tag=tag)
 
-    def __getattribute__(self, __name):
+    def __getattribute__(self, __name, /):
         if __name == "for":
             return self.__for__
         return super().__getattribute__(__name)

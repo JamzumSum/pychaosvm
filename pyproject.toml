@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "pychaosvm"
-version = "0.4.1"
+version = "0.4.2"
 description = "A Python envirionment for Tencent ChaosVM."
-authors = ["aioqzone <zzzzss990315@gmail.com>"]
+authors = ["aioqzone <22952836+JamzumSum@users.noreply.github.com>"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
 packages = [{ include = "chaosvm", from = "src" }]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 pyjsparser = "^2.7.1"
 typing-extensions = ">=4.6.0"
 lxml = "^5.3.0"
@@ -42,8 +42,8 @@ line_length = 99
 
 [tool.black]
 line-length = 99
-target-version = ['py38']
+target-version = ['py39']
 
 [tool.pyright]
-pythonVersion = "3.8"
+pythonVersion = "3.9"
 pythonPlatform = "All"
